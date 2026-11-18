@@ -1,0 +1,6 @@
+# Trivy ignore file — document accepted false-positives here
+# Format: CVE-ID [expiry-date] # Reason
+
+# Example (remove when not applicable):
+# CVE-2023-XXXXX 2025-12-31 # Accepted risk — no exploitable path in this application
+
