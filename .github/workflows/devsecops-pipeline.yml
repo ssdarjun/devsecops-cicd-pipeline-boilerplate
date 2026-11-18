@@ -226,28 +226,30 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # --- Print findings to the Actions log (table) so CVEs are visible ---
-      - name: Trivy Image Scan — Table Output (log visibility)
+      # --- Quality Gate: table format, exit-code 1 blocks on CRITICAL/HIGH ---
+      - name: "🔒 Trivy Image Scan — Quality Gate"
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "${{ env.IMAGE_NAME }}:${{ github.sha }}"
           format: "table"
           severity: "CRITICAL,HIGH"
-          exit-code: "0"
+          exit-code: "1"
           ignore-unfixed: true
-          trivyignore-file: ".trivyignore"
+          trivyignores: ".trivyignore"
 
-      # --- SARIF output for GitHub Security tab + quality gate ---
-      - name: Run Trivy Image Vulnerability Scan
+      # --- SARIF upload for GitHub Security tab (exit-code 0 — gate already done above) ---
+      - name: "📄 Trivy Image Scan — Generate SARIF for GitHub Security"
         uses: aquasecurity/trivy-action@master
+        if: always()
         with:
           image-ref: "${{ env.IMAGE_NAME }}:${{ github.sha }}"
           format: "sarif"
           output: "trivy-image.sarif"
           severity: "CRITICAL,HIGH"
-          exit-code: "1"
+          exit-code: "0"
           ignore-unfixed: true
-          trivyignore-file: ".trivyignore"
+          trivyignores: ".trivyignore"
+          limit-severities-for-sarif: true
 
       - name: Upload Trivy SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
@@ -255,7 +257,8 @@ jobs:
         with:
           sarif_file: trivy-image.sarif
 
-      - name: Run Trivy Filesystem Scan
+      # --- Filesystem scan: secrets + IaC misconfigs in repo ---
+      - name: "🗂️ Trivy Filesystem Scan — Quality Gate"
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: "fs"
@@ -264,7 +267,7 @@ jobs:
           severity: "CRITICAL,HIGH"
           exit-code: "1"
           ignore-unfixed: true
-          trivyignore-file: ".trivyignore"
+          trivyignores: ".trivyignore"
 
       - name: Upload Trivy Image Report
         uses: actions/upload-artifact@v4
