@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Test & coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Security scan reports
+bandit-report.json
+pip-audit-report.json
+trivy-*.sarif
+trivy-*.json
+
+# Docker
+.dockerignore
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Environment files — never commit secrets
+.env
+.env.*
+!.env.example
+
